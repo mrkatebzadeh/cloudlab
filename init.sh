@@ -43,7 +43,7 @@ echo 10000000001 | sudo tee /proc/sys/kernel/shmall
 
 ssh-keyscan -H github.com >>~/.ssh/known_hosts
 git clone https://github.com/ease-lab/Hermes hermes
-git clone git@github.com:${GITHUB_USERNAME}/cloudlab.git # assumes ssh-key on github exists on the node
+git clone https://github.com/${GITHUB_USERNAME}/cloudlab.git # assumes ssh-key on github exists on the node
 cd cloudlab || exit
 ./merge-chuncks.sh
 cd mellanox || exit
@@ -87,7 +87,7 @@ fi
 #############################
 # WARNING only on first node!
 #############################
-if [[ "${HOSTNAME:5:1}" == 1 ]]; then
+if [[ "${HOSTNAME:0:6}" == "master" ]]; then
 	sleep 100 # give some time so that all peers has setup their NICs
 
 	# start a subnet manager

@@ -16,6 +16,8 @@ ORDERED_HOST_NAMES=(
 sudo apt update
 sudo apt install parallel
 
+mkdir ~/.parallel
+touch ~/.parallel/will-cite
 
 # Include cloudlab_ssh_config in ssh
 # assumes you have created a key w/ ssh-keygen (here named id_rsa_cloudlab)

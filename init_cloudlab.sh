@@ -2,14 +2,14 @@
 
 # Set on every new instantiation
 ### TO BE FILLED: Please provide all cluster IPs
-    # Node w/ first IP (i.e., "manager") must run script before the rest of the nodes
-    # (instantiates a memcached to setup RDMA connections)
+# Node w/ first IP (i.e., "manager") must run script before the rest of the nodes
+# (instantiates a memcached to setup RDMA connections)
 ORDERED_HOST_NAMES=(
-  "apt152.apt.emulab.net"
-  "apt137.apt.emulab.net"
-  "apt162.apt.emulab.net"
-  "apt161.apt.emulab.net"
-  "apt140.apt.emulab.net"
+	"apt152.apt.emulab.net"
+	"apt137.apt.emulab.net"
+	"apt162.apt.emulab.net"
+	"apt161.apt.emulab.net"
+	"apt140.apt.emulab.net"
 )
 
 # Include cloudlab_ssh_config in ssh
@@ -26,33 +26,35 @@ CONFIG_NAME="cloudlab_ssh_config"
 SCRIPT_TO_COPY_N_RUN="init.sh"
 
 # Create file
-echo "# cloudlab config" > ${CONFIG_NAME}
-echo " " >> ${CONFIG_NAME}
+echo "# cloudlab config" >${CONFIG_NAME}
+echo " " >>${CONFIG_NAME}
 for i in "${!ORDERED_HOST_NAMES[@]}"; do
-  echo "Host ${SSH_PREFIX}$((i+1))" >> ${CONFIG_NAME}
-  echo "    User ${CLOUDLAB_USERNAME}" >> ${CONFIG_NAME}
-  echo "    IdentityFile ${CLOUDLAB_SSHKEY_FILE}" >> ${CONFIG_NAME}
-  echo "    HostName ${ORDERED_HOST_NAMES[i]}" >> ${CONFIG_NAME}
-  echo " " >> ${CONFIG_NAME}
+	{
+		echo "Host ${SSH_PREFIX}$((i + 1))"
+		echo "    User ${CLOUDLAB_USERNAME}"
+		echo "    IdentityFile ${CLOUDLAB_SSHKEY_FILE}"
+		echo "    HostName ${ORDERED_HOST_NAMES[i]}"
+		echo " "
+	} >>${CONFIG_NAME}
 done
 
 cp ${CONFIG_NAME} ~/.ssh/
 
 # Include in ssh_config if it does not exist
-if cat ~/.ssh/config | grep "Include ${CONFIG_NAME}" ; then
-   echo "${CONFIG_NAME} is already included in your ${SSH_CONFIG}"
+if cat ~/.ssh/config | grep "Include ${CONFIG_NAME}"; then
+	echo "${CONFIG_NAME} is already included in your ${SSH_CONFIG}"
 else
-   echo "Including ${CONFIG_NAME} in your ${SSH_CONFIG}"
+	echo "Including ${CONFIG_NAME} in your ${SSH_CONFIG}"
 
-   cp ${SSH_CONFIG} ${SSH_CONFIG}_backup  # take a backup of ssh config
-   echo "Include ${CONFIG_NAME}" > ${SSH_CONFIG}
-   echo " " >> ${SSH_CONFIG}
-   cat ${SSH_CONFIG}_backup >> ${SSH_CONFIG}
+	cp ${SSH_CONFIG} ${SSH_CONFIG}_backup # take a backup of ssh config
+	echo "Include ${CONFIG_NAME}" >${SSH_CONFIG}
+	echo " " >>${SSH_CONFIG}
+	cat ${SSH_CONFIG}_backup >>${SSH_CONFIG}
 fi
 
 ##insert to known_hosts
 for i in "${!ORDERED_HOST_NAMES[@]}"; do
-  ssh-keyscan -H ${ORDERED_HOST_NAMES[i]} >> ~/.ssh/known_hosts
+	ssh-keyscan -H ${ORDERED_HOST_NAMES[i]} >>~/.ssh/known_hosts
 done
 
 SSH_REMOTE_SSHKEY="/users/${CLOUDLAB_USERNAME}/.ssh/id_rsa"

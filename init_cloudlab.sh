@@ -18,7 +18,7 @@ ORDERED_HOST_NAMES=(
 
 # set once
 CLOUDLAB_USERNAME="siavash"
-SSH_CONFIG="/home/siavash/.ssh/config"
+SSH_CONFIG="${HOME}/.ssh/config"
 CLOUDLAB_SSHKEY_FILE="${HOME}/.ssh/id_rsa_cloudlab"
 
 SSH_PREFIX="n"

@@ -14,7 +14,7 @@ ORDERED_HOST_NAMES=(
 
 # install parallel
 sudo apt update
-sudo apt install parallel
+sudo apt install parallel -y
 
 mkdir ~/.parallel
 touch ~/.parallel/will-cite

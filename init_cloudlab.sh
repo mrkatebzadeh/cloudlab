@@ -12,6 +12,11 @@ ORDERED_HOST_NAMES=(
 	"apt140.apt.emulab.net"
 )
 
+# install parallel
+sudo apt update
+sudo apt install parallel
+
+
 # Include cloudlab_ssh_config in ssh
 # assumes you have created a key w/ ssh-keygen (here named id_rsa_cloudlab)
 # and already registered its public key on cloudlab

@@ -87,7 +87,7 @@ fi
 #############################
 # WARNING only on first node!
 #############################
-if [[ "${HOSTNAME:0:6}" == "master" ]]; then
+if [[ "${HOSTNAME:5:1}" == "1" ]]; then
 	sleep 100 # give some time so that all peers has setup their NICs
 
 	# start a subnet manager

@@ -1,12 +1,9 @@
 #!/usr/bin/env bash
 # shellcheck disable=2028
 
-# WARNING: Before executing this script make sure to have setup
-#   ssh-key on github and cloudlab and have share it with executing node
 
-# TODO: Set the two variabled below
 GITHUB_USERNAME="mrkatebzadeh"
-NO_NODES="5" # WARNING: cannot be higher than number of allocated nodes in cloudlab
+NO_NODES="5"
 
 # last OFED supporting CX3 nic
 OFED="MLNX_OFED_LINUX-5.0-2.1.8.0-ubuntu18.04-x86_64"
@@ -16,33 +13,17 @@ if [[ "${NO_NODES}" -gt 9 ]]; then
 	exit 1
 fi
 
-# [Optionally] set terminal bar --> must source ~/.bashrc to apply it
-{
-	echo " "
-	echo "#My Options"
-	echo "#Terminal Bar"
-	echo "parse_git_branch() {"
-	echo "   git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/{\1}/'"
-	echo "}"
-	echo "export PS1=\"\[\033[36m\]\u\[\033[0;31m\]\$(parse_git_branch)\[\033[m\]@\[\033[32m\]\h:\[\033[33;2m\]\w\[\033[m\]\$\""
-	echo " "
-} >>~/.bashrc
-
-# Install dependencies
 sudo apt update
-sudo apt --yes install git vim htop make cmake gcc parallel libnuma-dev libmemcached-dev memcached
+sudo apt --yes install parallel libnuma-dev libmemcached-dev memcached
 
-# silence parallel citation without the manual "will-cite" after parallel --citation
-mkdir ~/.parallel
+mkdir -p ~/.parallel
 touch ~/.parallel/will-cite
 
-# Configure (2MB) huge-pages for the KVS
 echo 4096 | sudo tee /sys/devices/system/node/node*/hugepages/hugepages-2048kB/nr_hugepages
 echo 10000000001 | sudo tee /proc/sys/kernel/shmmax
 echo 10000000001 | sudo tee /proc/sys/kernel/shmall
 
 ssh-keyscan -H github.com >>~/.ssh/known_hosts
-git clone https://github.com/ease-lab/Hermes hermes
 git clone https://github.com/${GITHUB_USERNAME}/cloudlab.git # assumes ssh-key on github exists on the node
 cd cloudlab || exit
 ./merge-chuncks.sh
@@ -79,14 +60,6 @@ else
 	exit 1
 fi
 
-# [Optionally] For dbg ensure everything was configured properly
-#ibdev2netdev # --> must show ib0 (up)
-#ifconfig --> expected ib0 w/ expected ip
-#ibv_devinfo --> PORT_ACTIVE
-
-#############################
-# WARNING only on first node!
-#############################
 if [[ "${HOSTNAME:5:1}" == "1" ]]; then
 	sleep 100 # give some time so that all peers has setup their NICs
 
@@ -98,8 +71,4 @@ if [[ "${HOSTNAME:5:1}" == "1" ]]; then
 	for i in $(seq 1 ${NO_NODES}); do
 		ssh-keyscan -H 10.0.3."${i}" >>~/.ssh/known_hosts
 	done
-
-	# run default hermes
-	cd ~/hermes/bin/ || exit
-	./copy-n-exec-hermesKV.sh no_pass # By default it runs on 5 nodes
 fi
